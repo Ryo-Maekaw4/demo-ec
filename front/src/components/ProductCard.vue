@@ -6,7 +6,8 @@
             <template v-if="normalizedReview != null">
                 <v-icon v-for="n in fullStars" :key="'full-' + n" size="x-small" class="ma-0">mdi-star</v-icon>
                 <v-icon v-if="hasHalfStar" size="x-small" class="ma-0">mdi-star-half-full</v-icon>
-                <v-icon v-for="n in emptyStars" :key="'empty-' + n" size="x-small" class="ma-0">mdi-star-outline</v-icon>
+                <v-icon v-for="n in emptyStars" :key="'empty-' + n" size="x-small"
+                    class="ma-0">mdi-star-outline</v-icon>
             </template>
             <v-chip v-if="showReleaseDate && isReleasedThisYear" color="primary" size="x-small" class="ma-1">
                 NEW
@@ -35,9 +36,9 @@
 import { computed } from 'vue'
 
 const props = defineProps({
-  product: { type: Object, required: true },
-  /** 新着商品ページ用：発売日表示と本年度発売の NEW バッジを表示 */
-  showReleaseDate: { type: Boolean, default: false },
+    product: { type: Object, required: true },
+    /** 新着商品ページ用：発売日表示と本年度発売の NEW バッジを表示 */
+    showReleaseDate: { type: Boolean, default: false },
 })
 const emit = defineEmits(['show-detail'])
 
@@ -59,19 +60,19 @@ const emptyStars = computed(() => 5 - fullStars.value - (hasHalfStar.value ? 1 :
 
 // 発売日：YYYY-MM-DD やタイムスタンプを「YYYY年M月D日」に整形
 const formattedReleaseDate = computed(() => {
-  const v = props.product?.release_date
-  if (v == null || v === '') return null
-  const d = typeof v === 'number' ? new Date(v * 1000) : new Date(String(v))
-  if (Number.isNaN(d.getTime())) return null
-  return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
+    const v = props.product?.release_date
+    if (v == null || v === '') return null
+    const d = typeof v === 'number' ? new Date(v * 1000) : new Date(String(v))
+    if (Number.isNaN(d.getTime())) return null
+    return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`
 })
 
 // 本年度（暦年）に発売したか
 const isReleasedThisYear = computed(() => {
-  const v = props.product?.release_date
-  if (v == null || v === '') return false
-  const d = typeof v === 'number' ? new Date(v * 1000) : new Date(String(v))
-  if (Number.isNaN(d.getTime())) return false
-  return d.getFullYear() === new Date().getFullYear()
+    const v = props.product?.release_date
+    if (v == null || v === '') return false
+    const d = typeof v === 'number' ? new Date(v * 1000) : new Date(String(v))
+    if (Number.isNaN(d.getTime())) return false
+    return d.getFullYear() === new Date().getFullYear()
 })
 </script>

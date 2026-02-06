@@ -10,18 +10,12 @@
 
       <v-container class="pa-0">
         <v-row>
-          <v-col
-            v-for="category in categories"
-            :key="category.id"
-            cols="12"
-            sm="6"
-            md="4"
-          >
-            <router-link :to="category.path" class="category-link">
+          <v-col v-for="category in categories" :key="category.id" cols="12" sm="6" md="4">
+            <router-link :to="{ path: '/search_list', state: { categoryId: category.id } }" class="category-link">
               <v-card class="category-card" variant="outlined">
                 <v-card-text class="d-flex align-center pa-4">
                   <v-icon :icon="category.icon" size="40" class="me-3" color="primary" />
-                  <span class="text-h6">{{ category.name }}（{{ category.id }}）</span>
+                  <span class="text-h6">{{ category.name }}</span>
                 </v-card-text>
               </v-card>
             </router-link>
@@ -36,9 +30,9 @@
 import Header from '@/components/Header.vue'
 
 const categories = [
-  { id: 1, name: '家具', path: '/search_list?category=1', icon: 'mdi-sofa' },
-  { id: 2, name: '家電', path: '/search_list?category=2', icon: 'mdi-television' },
-  { id: 3, name: '食品', path: '/search_list?category=3', icon: 'mdi-food-apple' },
+  { id: 1, name: '家具', icon: 'mdi-sofa' },
+  { id: 2, name: '家電', icon: 'mdi-television' },
+  { id: 3, name: '食品', icon: 'mdi-food-apple' },
 ]
 </script>
 

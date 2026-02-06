@@ -5,9 +5,9 @@
 <template>
   <div class="ma-4">
     <Header />
-    <v-card max-width="400" class="mx-auto" variant="flat" color="grey-lighten-3">
+    <v-card max-width="400" class="mx-auto mt-4" variant="flat" color="grey-lighten-3">
       <v-card-title>
-        <h1 class="text-h4">ログイン</h1>
+        <h1 class=" text-h4">ログイン</h1>
       </v-card-title>
       <v-card-text>
         <!-- v-if：errorMessage が「あるときだけ」このブロックを表示する（条件分岐） -->

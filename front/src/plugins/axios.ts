@@ -1,24 +1,17 @@
 /**
  * axios.ts
- *
+ * 
  * Axiosの設定とインターセプター
  * すべてのAPIリクエストで認証エラー（401）を検知して自動処理
- *
- * API接続先:
- * - 本番: 環境変数 VITE_API_BASE_URL に Vercel の URL を指定（例: https://xxx.vercel.app）
- * - 開発: 未設定の場合は /fuel-api を使い、Vite の proxy でローカル backend に転送
  */
 
 import axios from 'axios'
 import { useAuth } from '@/composables/useAuth'
 
-const apiBaseURL =
-  import.meta.env.VITE_API_BASE_URL != null && import.meta.env.VITE_API_BASE_URL !== ''
-    ? import.meta.env.VITE_API_BASE_URL.replace(/\/$/, '') // 末尾スラッシュ除去
-    : '/fuel-api'
-
+// Axiosインスタンスを作成
 const apiClient = axios.create({
-  baseURL: apiBaseURL,
+  baseURL: '/fuel-api',
+  // JWTトークンベースなので、withCredentialsは不要
   headers: {
     'Content-Type': 'application/json',
   },

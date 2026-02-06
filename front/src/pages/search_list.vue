@@ -83,14 +83,12 @@
 <script setup lang="ts">
 /* Composition API：ref で「箱」を用意。script 内で値を変えるときは .value を使う */
 import { ref, onMounted } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import apiClient from '@/plugins/axios'
 import Header from '@/components/Header.vue'
 import ProductCard from '@/components/ProductCard.vue';
 
 const router = useRouter()
-/* route で「今のURL」の情報を取得。route.query で ?keyword=〇〇 の部分を読める */
-const route = useRoute()
 
 const products = ref<any[]>([])
 const searchKeyword = ref('')
@@ -158,13 +156,6 @@ const handleCategoryChange = (value: number | string | null | undefined) => {
   appliedCategoryId.value = id
   appliedCategoryName.value = id > 0 ? (CATEGORY_NAMES[id] ?? '') : ''
   currentPage.value = 1
-  router.replace({
-    path: route.path,
-    query: {
-      ...route.query,
-      category: id > 0 ? String(id) : undefined,
-    },
-  })
   fetchProducts(1, id)
 }
 
@@ -183,20 +174,20 @@ const addToCart = (product: any) => {
 }
 
 /* onMounted：このページが表示された「直後」に一度だけ実行。
-   URL の ?keyword=〇〇 と ?category=〇 を読んで反映し、商品一覧をAPIで取得 */
+   URL は使わず、現在の状態で商品一覧をAPIで取得 */
 onMounted(() => {
-  const keyword = (route.query.keyword as string) || ''
-  searchKeyword.value = keyword
-  appliedKeyword.value = keyword.trim()
-  const categoryId = route.query.category as string
-  if (categoryId) {
-    const id = parseInt(categoryId, 10)
-    appliedCategoryId.value = !Number.isNaN(id) && id > 0 ? id : 0
-    appliedCategoryName.value = appliedCategoryId.value > 0 ? (CATEGORY_NAMES[appliedCategoryId.value] ?? '') : ''
-  } else {
-    appliedCategoryId.value = 0
-    appliedCategoryName.value = ''
+  // カテゴリ一覧からの遷移時は、URLクエリではなく history state でカテゴリIDを受け取る
+  const raw = (window.history.state as any)?.categoryId
+  const id = typeof raw === 'number' ? raw : (raw != null && raw !== '' ? Number(raw) : 0)
+  const categoryId = Number.isNaN(id) ? 0 : id
+
+  if (categoryId > 0) {
+    appliedCategoryId.value = categoryId
+    appliedCategoryName.value = CATEGORY_NAMES[categoryId] ?? ''
+    fetchProducts(1, categoryId)
+    return
   }
+
   fetchProducts(1)
 })
 </script>

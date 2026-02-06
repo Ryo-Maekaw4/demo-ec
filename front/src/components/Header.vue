@@ -87,7 +87,6 @@ watch(isLoggedIn, (loggedIn) => {
 })
 
 const tabMenu = [
-  { text: 'NEWS', path: '/news' },
   { text: '商品一覧', path: '/search_list' },
   { text: '新着商品', path: '/new_products' },
   { text: '人気商品', path: '/popular_products' },
@@ -104,8 +103,7 @@ const hamburgerMenu = [
     ]
   },
   { menuTitle: 'マイページ', icon: 'account-outline', path: '/mypage' },
-  { menuTitle: 'カート', icon: 'cart-outline', path: '/cart' },
-  { menuTitle: 'お知らせ', icon: 'bell-outline', path: '/news' },
+  { menuTitle: 'カート情報', icon: 'cart-outline', path: '/cart' },
 ]
 
 const isHamburgerMenuOpen = ref(false)
