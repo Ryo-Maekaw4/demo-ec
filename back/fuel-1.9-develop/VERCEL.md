@@ -12,7 +12,7 @@
 | ファイル | 役割 |
 |----------|------|
 | `api/index.php` | Vercel サーバーレス用のエントリポイント。FuelPHP をブートストラップし、全リクエストを処理する。 |
-| `vercel.json` | Vercel のビルド・ルーティング設定。全パスを `api/index.php` に転送する。 |
+| `vercel.json` | Vercel の関数・ルーティング設定。`vercel-php@0.9.0`（Node.js 22.x / PHP 8.5）を使用し、全パスを `api/index.php` に転送する。 |
 
 ## 2. Vercel での設定
 
