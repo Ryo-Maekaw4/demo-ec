@@ -21,10 +21,17 @@ ini_set('display_errors', 1);
  * -----------------------------------------------------------------------------
  *  CORS: クロスオリジン（Vue など別ドメイン）からの API 呼び出しを許可
  * -----------------------------------------------------------------------------
- * ブラウザは事前に OPTIONS を送る。OPTIONS に 200 + CORS ヘッダーを返さないと
- * 本番の POST/GET がブロックされ、Network で失敗・404 に見える。
+ * ブラウザは事前に OPTIONS（プリフライト）を送る。200 + CORS を返さないと
+ * 本番の POST/GET がブロックされ CORS エラーになる。
+ * REQUEST_METHOD が Vercel 経由で GET に変わる場合があるため、
+ * Access-Control-Request-Method があればプリフライトとみなして即 200 を返す。
  */
-if (php_sapi_name() !== 'cli' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+$isPreflight = (php_sapi_name() !== 'cli')
+    && (
+        ($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS'
+        || !empty($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])
+    );
+if ($isPreflight) {
     $origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
     header('Access-Control-Allow-Origin: ' . $origin);
     header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
