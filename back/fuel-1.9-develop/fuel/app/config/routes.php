@@ -42,6 +42,7 @@ return array(
 
 	// ここがURLになる 例：http://localhost/fuel/education
 	'education' => array('education/index'),
+	'education/index' => array('education/index'),
 	'education/topic1' => array('education/topic1'),
 	'education/topic2' => array('education/topic2'),
 	'education/topic3' => array('education/topic3'),

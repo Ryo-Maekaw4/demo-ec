@@ -44,18 +44,29 @@ if (php_sapi_name() !== 'cli' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS
 if (php_sapi_name() !== 'cli') {
     $uri = $_SERVER['REQUEST_URI'] ?? '';
     $needFix = ($uri === '' || $uri === '/api/index.php' || strpos($uri, '/api/index.php') === 0);
+
+    $restoredPath = null;
     if ($needFix && isset($_GET['_path'])) {
-        $_SERVER['REQUEST_URI'] = '/' . ltrim((string) $_GET['_path'], '/');
+        $restoredPath = '/' . ltrim((string) $_GET['_path'], '/');
         $qs = $_GET;
         unset($qs['_path']);
         if ($qs !== []) {
-            $_SERVER['REQUEST_URI'] .= '?' . http_build_query($qs);
+            $restoredPath .= '?' . http_build_query($qs);
         }
+    } elseif ($needFix && preg_match('#[?&]_path=([^&]+)#', $uri, $m)) {
+        $restoredPath = '/' . ltrim(rawurldecode($m[1]), '/');
     } elseif ($needFix && isset($_SERVER['HTTP_X_VERCEL_ORIGINAL_PATH'])) {
-        $_SERVER['REQUEST_URI'] = $_SERVER['HTTP_X_VERCEL_ORIGINAL_PATH'];
+        $restoredPath = $_SERVER['HTTP_X_VERCEL_ORIGINAL_PATH'];
         if (!empty($_SERVER['QUERY_STRING'])) {
-            $_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
+            $restoredPath .= '?' . $_SERVER['QUERY_STRING'];
         }
+    }
+
+    if ($restoredPath !== null) {
+        $_SERVER['REQUEST_URI'] = $restoredPath;
+        $_SERVER['PATH_INFO'] = strpos($restoredPath, '?') !== false
+            ? substr($restoredPath, 0, strpos($restoredPath, '?'))
+            : $restoredPath;
     }
 }
 
