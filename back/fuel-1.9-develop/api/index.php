@@ -21,19 +21,21 @@ ini_set('display_errors', 1);
  * -----------------------------------------------------------------------------
  *  Vercel 用: リクエスト URI の補正
  * -----------------------------------------------------------------------------
- * 全ルートが /api/index.php に転送されるため、dest のパスになっている場合は
- * 元のリクエストパスを REQUEST_URI に反映する（ルーティングのため）
+ * 全ルートが /api/index.php?_path=$1 に転送されるため、元のパスを _path から
+ * 復元して REQUEST_URI に設定する（FuelPHP のルーティングのため）
  */
 if (php_sapi_name() !== 'cli') {
     $uri = $_SERVER['REQUEST_URI'] ?? '';
-    $needFix = ($uri === '' || $uri === '/api/index.php' || strpos($uri, '/api/index.php?') === 0);
-    if ($needFix && isset($_SERVER['HTTP_X_VERCEL_ORIGINAL_PATH'])) {
-        $_SERVER['REQUEST_URI'] = $_SERVER['HTTP_X_VERCEL_ORIGINAL_PATH'];
-        if (!empty($_SERVER['QUERY_STRING'])) {
-            $_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
-        }
-    } elseif ($needFix && isset($_GET['_path'])) {
+    $needFix = ($uri === '' || $uri === '/api/index.php' || strpos($uri, '/api/index.php') === 0);
+    if ($needFix && isset($_GET['_path'])) {
         $_SERVER['REQUEST_URI'] = '/' . ltrim((string) $_GET['_path'], '/');
+        $qs = $_GET;
+        unset($qs['_path']);
+        if ($qs !== []) {
+            $_SERVER['REQUEST_URI'] .= '?' . http_build_query($qs);
+        }
+    } elseif ($needFix && isset($_SERVER['HTTP_X_VERCEL_ORIGINAL_PATH'])) {
+        $_SERVER['REQUEST_URI'] = $_SERVER['HTTP_X_VERCEL_ORIGINAL_PATH'];
         if (!empty($_SERVER['QUERY_STRING'])) {
             $_SERVER['REQUEST_URI'] .= '?' . $_SERVER['QUERY_STRING'];
         }
