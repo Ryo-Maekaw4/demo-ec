@@ -43,7 +43,9 @@ if ($pooler_host !== '') {
     $host_raw = getenv('SUPABASE_DB_HOST') ?: $default_host;
     list($host, $parsed_port) = $parse_host_port($host_raw);
     $port = $parsed_port !== null ? $parsed_port : (getenv('SUPABASE_DB_PORT') ?: (getenv('VERCEL') ? '6543' : '5432'));
-    $user = getenv('SUPABASE_DB_USER') ?: 'postgres';
+    $user = (strpos($host, 'pooler.supabase.com') !== false)
+        ? ('postgres.' . (getenv('SUPABASE_PROJECT_REF') ?: $default_ref))
+        : (getenv('SUPABASE_DB_USER') ?: 'postgres');
 }
 $name = getenv('SUPABASE_DB_NAME') ?: 'postgres';
 
