@@ -12,31 +12,36 @@
 
 /**
  * -----------------------------------------------------------------------------
- *  Global database settings
+ *  Global database settings（Supabase / PostgreSQL）
  * -----------------------------------------------------------------------------
  *
- *  Set database configurations here to override environment specific
- *  configurations
+ *  Supabase のデータベース接続用。
+ *  パスワードは Supabase ダッシュボード > Project Settings > Database の
+ *  "Database password" を環境変数 SUPABASE_DB_PASSWORD に設定してください。
+ *  （Publishable key / Secret key は API 用で、DB 接続には使いません）
  *
  */
 
+$supabase_host = getenv('SUPABASE_DB_HOST') ?: 'db.ulizmfrojltqbmucqjfz.supabase.co';
+$supabase_port = getenv('SUPABASE_DB_PORT') ?: '5432';
+$supabase_db   = getenv('SUPABASE_DB_NAME') ?: 'postgres';
+$supabase_user = getenv('SUPABASE_DB_USER') ?: 'postgres';
+$supabase_pass = getenv('SUPABASE_DB_PASSWORD') ?: '';
+
 return array(
     'default' => array(
-        'type' => 'mysqli',
+        'type' => 'pdo',
         'connection' => array(
-            'hostname' => 'localhost',
-            'port' => '3306',
-            'database' => 'fuel_dev',
-            'username' => 'root',
-            'password' => 'root',
+            'dsn'        => 'pgsql:host='.$supabase_host.';port='.$supabase_port.';dbname='.$supabase_db,
+            'username'   => $supabase_user,
+            'password'   => $supabase_pass,
             'persistent' => false,
-            'compress' => false,
         ),
-        'identifier' => '`',
+        'identifier'   => '"',
         'table_prefix' => '',
-        'charset' => 'utf8',
+        'charset'      => 'utf8',
         'enable_cache' => true,
-        'profiling' => false,
-        'readonly' => false,
+        'profiling'    => false,
+        'readonly'     => false,
     ),
 );

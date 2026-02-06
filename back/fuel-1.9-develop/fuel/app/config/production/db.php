@@ -12,19 +12,19 @@
 
 /**
  * -----------------------------------------------------------------------------
- *  Database settings for production environment
+ *  Database settings for production environment（Supabase）
  * -----------------------------------------------------------------------------
  *
- *  These settings get merged with the global settings.
+ *  Vercel 等では環境変数 SUPABASE_DB_PASSWORD を設定してください。
  *
  */
 
 return array(
-	'default' => array(
-		'connection' => array(
-			'dsn'      => 'mysql:host=localhost;dbname=fuel_prod',
-			'username' => 'fuel_app',
-			'password' => 'super_secret_password',
-		),
-	),
+    'default' => array(
+        'connection' => array(
+            'dsn'      => 'pgsql:host='.(getenv('SUPABASE_DB_HOST') ?: 'db.ulizmfrojltqbmucqjfz.supabase.co').';port='.(getenv('SUPABASE_DB_PORT') ?: '5432').';dbname='.(getenv('SUPABASE_DB_NAME') ?: 'postgres'),
+            'username' => getenv('SUPABASE_DB_USER') ?: 'postgres',
+            'password' => getenv('SUPABASE_DB_PASSWORD') ?: '',
+        ),
+    ),
 );

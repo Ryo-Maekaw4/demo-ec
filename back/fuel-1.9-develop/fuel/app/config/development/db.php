@@ -12,19 +12,20 @@
 
 /**
  * -----------------------------------------------------------------------------
- *  Database settings for development environment
+ *  Database settings for development environment（Supabase）
  * -----------------------------------------------------------------------------
  *
- *  These settings get merged with the global settings.
+ *  グローバル db.php の Supabase 設定をそのまま使用。
+ *  上書きしたい場合のみここで connection 等を指定してください。
  *
  */
 
 return array(
-	'default' => array(
-		'connection' => array(
-			'dsn'      => 'mysql:host=localhost;dbname=fuel_dev',
-			'username' => 'root',
-			'password' => 'root',
-		),
-	),
+    'default' => array(
+        'connection' => array(
+            'dsn'      => 'pgsql:host='.(getenv('SUPABASE_DB_HOST') ?: 'db.ulizmfrojltqbmucqjfz.supabase.co').';port='.(getenv('SUPABASE_DB_PORT') ?: '5432').';dbname='.(getenv('SUPABASE_DB_NAME') ?: 'postgres'),
+            'username' => getenv('SUPABASE_DB_USER') ?: 'postgres',
+            'password' => getenv('SUPABASE_DB_PASSWORD') ?: '',
+        ),
+    ),
 );
