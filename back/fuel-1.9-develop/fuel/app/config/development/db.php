@@ -16,14 +16,19 @@
  * -----------------------------------------------------------------------------
  *
  *  グローバル db.php の Supabase 設定をそのまま使用。
- *  上書きしたい場合のみここで connection 等を指定してください。
+ *  Vercel では FUEL_ENV 未設定で development になるため、ここでも Vercel 時は
+ *  Connection Pooler(6543) を使うようにする。
  *
  */
+
+$host = getenv('SUPABASE_DB_HOST') ?: 'db.ulizmfrojltqbmucqjfz.supabase.co';
+$port = getenv('SUPABASE_DB_PORT') ?: (getenv('VERCEL') ? '6543' : '5432');
+$name = getenv('SUPABASE_DB_NAME') ?: 'postgres';
 
 return array(
     'default' => array(
         'connection' => array(
-            'dsn'      => 'pgsql:host='.(getenv('SUPABASE_DB_HOST') ?: 'db.ulizmfrojltqbmucqjfz.supabase.co').';port='.(getenv('SUPABASE_DB_PORT') ?: '5432').';dbname='.(getenv('SUPABASE_DB_NAME') ?: 'postgres'),
+            'dsn'      => 'pgsql:host='.$host.';port='.$port.';dbname='.$name,
             'username' => getenv('SUPABASE_DB_USER') ?: 'postgres',
             'password' => getenv('SUPABASE_DB_PASSWORD') ?: '',
         ),
