@@ -8,9 +8,12 @@
 import axios from 'axios'
 import { useAuth } from '@/composables/useAuth'
 
-// Axiosインスタンスを作成
+// 本番: VITE_API_BASE_URL（例: https://demo-ec-api.vercel.app）を指定してビルドすること
+// 未設定時: 開発時は /fuel で Vite の proxy がローカル FuelPHP に転送
+const baseURL = import.meta.env.VITE_API_BASE_URL ?? '/fuel'
+
 const apiClient = axios.create({
-  baseURL: '/fuel',
+  baseURL,
   // JWTトークンベースなので、withCredentialsは不要
   headers: {
     'Content-Type': 'application/json',

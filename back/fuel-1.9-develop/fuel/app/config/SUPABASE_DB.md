@@ -5,7 +5,7 @@
 - **プロジェクト URL（API）**: https://ulizmfrojltqbmucqjfz.supabase.co
 - **プロジェクト ID**: ulizmfrojltqbmucqjfz
 - **DB ホスト**: `db.ulizmfrojltqbmucqjfz.supabase.co`
-- **ポート**: 5432（直接接続） / 6543（Connection pooler 利用時）
+- **ポート**: 5432（直接接続・ローカル向け） / **6543（Connection pooler・Vercel 等サーバーレス向け）**
 - **データベース名**: postgres
 - **ユーザー名**: postgres
 
@@ -27,9 +27,13 @@ FuelPHP から Supabase の Postgres に接続するには、**データベー�
 |--------|------|-----|
 | `SUPABASE_DB_PASSWORD` | 上記「Database password」 | （必須） |
 | `SUPABASE_DB_HOST` | 省略時は `db.ulizmfrojltqbmucqjfz.supabase.co` | 任意 |
-| `SUPABASE_DB_PORT` | 省略時は `5432` | 任意 |
+| `SUPABASE_DB_PORT` | 省略時はローカル 5432 / 本番(production) 6543 | 任意 |
 | `SUPABASE_DB_NAME` | 省略時は `postgres` | 任意 |
 | `SUPABASE_DB_USER` | 省略時は `postgres` | 任意 |
+
+## Vercel で接続できない場合（Cannot assign requested address）
+
+Vercel のサーバーレスから直接接続（ポート 5432）を使うと、IPv6 や接続数制限でエラーになることがあります。本番（production）では **Connection Pooler（ポート 6543）** をデフォルトで使うようにしてあります。Vercel の環境変数で `SUPABASE_DB_PORT=6543` を明示しても構いません。
 
 ## テーブル作成
 

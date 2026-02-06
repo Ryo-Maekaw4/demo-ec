@@ -23,7 +23,8 @@
  */
 
 $supabase_host = getenv('SUPABASE_DB_HOST') ?: 'db.ulizmfrojltqbmucqjfz.supabase.co';
-$supabase_port = getenv('SUPABASE_DB_PORT') ?: '5432';
+// Vercel 等サーバーレスでは直接接続(5432)で失敗するため、未指定時は Pooler(6543) を使う
+$supabase_port = getenv('SUPABASE_DB_PORT') ?: (getenv('VERCEL') ? '6543' : '5432');
 $supabase_db   = getenv('SUPABASE_DB_NAME') ?: 'postgres';
 $supabase_user = getenv('SUPABASE_DB_USER') ?: 'postgres';
 $supabase_pass = getenv('SUPABASE_DB_PASSWORD') ?: '';

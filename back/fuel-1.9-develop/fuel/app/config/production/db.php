@@ -16,13 +16,19 @@
  * -----------------------------------------------------------------------------
  *
  *  Vercel 等では環境変数 SUPABASE_DB_PASSWORD を設定してください。
+ *  サーバーレスでは直接接続(5432)で "Cannot assign requested address" が出るため、
+ *  本番は Connection Pooler（ポート 6543）をデフォルトにしています。
  *
  */
+
+$host = getenv('SUPABASE_DB_HOST') ?: 'db.ulizmfrojltqbmucqjfz.supabase.co';
+$port = getenv('SUPABASE_DB_PORT') ?: '6543'; // 本番は Pooler 推奨
+$name = getenv('SUPABASE_DB_NAME') ?: 'postgres';
 
 return array(
     'default' => array(
         'connection' => array(
-            'dsn'      => 'pgsql:host='.(getenv('SUPABASE_DB_HOST') ?: 'db.ulizmfrojltqbmucqjfz.supabase.co').';port='.(getenv('SUPABASE_DB_PORT') ?: '5432').';dbname='.(getenv('SUPABASE_DB_NAME') ?: 'postgres'),
+            'dsn'      => 'pgsql:host='.$host.';port='.$port.';dbname='.$name,
             'username' => getenv('SUPABASE_DB_USER') ?: 'postgres',
             'password' => getenv('SUPABASE_DB_PASSWORD') ?: '',
         ),
