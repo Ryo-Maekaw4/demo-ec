@@ -67,6 +67,12 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      // 開発時: /fuel-api をローカル FuelPHP に転送（VITE_API_BASE_URL 未設定時）
+      '/fuel-api': {
+        target: 'http://localhost',
+        changeOrigin: true,
+        secure: false,
+      },
       '/fuel': {
         target: 'http://localhost',
         changeOrigin: true,
