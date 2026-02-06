@@ -29,11 +29,28 @@ FuelPHP から Supabase の Postgres に接続するには、**データベー�
 | `SUPABASE_DB_HOST` | 省略時は `db.ulizmfrojltqbmucqjfz.supabase.co` | 任意 |
 | `SUPABASE_DB_PORT` | 省略時はローカル 5432 / 本番(production) 6543 | 任意 |
 | `SUPABASE_DB_NAME` | 省略時は `postgres` | 任意 |
-| `SUPABASE_DB_USER` | 省略時は `postgres` | 任意 |
+| `SUPABASE_DB_USER` | 省略時は `postgres`（Pooler 利用時は `postgres.プロジェクトREF`） | 任意 |
+| `SUPABASE_DB_POOLER_HOST` | **Vercel 用** Pooler ホスト（IPv4 対応）。下記「Pooler 接続」を参照 | 任意 |
+| `SUPABASE_PROJECT_REF` | Pooler 利用時のプロジェクト REF。省略時は `ulizmfrojltqbmucqjfz` | 任意 |
 
-## Vercel で接続できない場合（Cannot assign requested address）
+## Vercel で接続できない場合（Cannot assign requested address / IPv6）
 
-Vercel のサーバーレスから直接接続（ポート 5432）を使うと、IPv6 や接続数制限でエラーになることがあります。本番（production）では **Connection Pooler（ポート 6543）** をデフォルトで使うようにしてあります。Vercel の環境変数で `SUPABASE_DB_PORT=6543` を明示しても構いません。
+Vercel は **IPv4 のみ** のため、`db.xxx.supabase.co`（IPv6）では接続に失敗することがあります。**Pooler 用ホスト**（IPv4 対応）を使うと解消します。
+
+### Pooler 接続の設定手順
+
+1. [Supabase Dashboard](https://supabase.com/dashboard) でプロジェクトを開く
+2. 左メニュー **Project Settings** → **Database**、または **Connect** ボタンを開く
+3. **Connection string** で **Transaction**（または **Session**）を選択
+4. 表示される接続文字列の **ホスト部分** をコピー  
+   例: `postgres://postgres.ulizmfrojltqbmucqjfz:[PASSWORD]@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres`  
+   → ホストは `aws-0-ap-northeast-1.pooler.supabase.com`
+5. Vercel の環境変数に追加:
+   - `SUPABASE_DB_POOLER_HOST` = 上記ホスト（例: `aws-0-ap-northeast-1.pooler.supabase.com`）
+   - `SUPABASE_PROJECT_REF` = プロジェクト REF（例: `ulizmfrojltqbmucqjfz`）。接続文字列のユーザー `postgres.XXXXX` の XXXXX 部分
+6. API プロジェクトを再デプロイ
+
+Pooler 利用時はユーザー名が自動で `postgres.プロジェクトREF` になります。`SUPABASE_DB_PASSWORD` はこれまで通り必要です。
 
 ## テーブル作成
 

@@ -18,15 +18,30 @@
  *  Supabase のデータベース接続用。
  *  パスワードは Supabase ダッシュボード > Project Settings > Database の
  *  "Database password" を環境変数 SUPABASE_DB_PASSWORD に設定してください。
- *  （Publishable key / Secret key は API 用で、DB 接続には使いません）
+ *
+ *  Vercel では db.xxx.supabase.co が IPv6 のため接続失敗することがあります。
+ *  → Dashboard > Connect > Transaction mode の接続文字列から、
+ *    SUPABASE_DB_POOLER_HOST（例: aws-0-ap-northeast-1.pooler.supabase.com）を
+ *    設定すると Pooler 経由（IPv4 対応）で接続します。
  *
  */
 
-$supabase_host = getenv('SUPABASE_DB_HOST') ?: 'db.ulizmfrojltqbmucqjfz.supabase.co';
-// Vercel 等サーバーレスでは直接接続(5432)で失敗するため、未指定時は Pooler(6543) を使う
-$supabase_port = getenv('SUPABASE_DB_PORT') ?: (getenv('VERCEL') ? '6543' : '5432');
+$default_host = 'db.ulizmfrojltqbmucqjfz.supabase.co';
+$default_ref = 'ulizmfrojltqbmucqjfz';
+
+$pooler_host = getenv('SUPABASE_DB_POOLER_HOST');
+if ($pooler_host !== false && $pooler_host !== '') {
+    // Pooler 利用（Vercel 等 IPv4 必須環境向け）: ホスト・ポート・ユーザー形式を変更
+    $supabase_host = $pooler_host;
+    $supabase_port = getenv('SUPABASE_DB_PORT') ?: '6543';
+    $project_ref   = getenv('SUPABASE_PROJECT_REF') ?: $default_ref;
+    $supabase_user = 'postgres.' . $project_ref; // Pooler はこの形式必須
+} else {
+    $supabase_host = getenv('SUPABASE_DB_HOST') ?: $default_host;
+    $supabase_port = getenv('SUPABASE_DB_PORT') ?: (getenv('VERCEL') ? '6543' : '5432');
+    $supabase_user = getenv('SUPABASE_DB_USER') ?: 'postgres';
+}
 $supabase_db   = getenv('SUPABASE_DB_NAME') ?: 'postgres';
-$supabase_user = getenv('SUPABASE_DB_USER') ?: 'postgres';
 $supabase_pass = getenv('SUPABASE_DB_PASSWORD') ?: '';
 
 return array(

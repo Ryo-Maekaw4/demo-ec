@@ -16,20 +16,31 @@
  * -----------------------------------------------------------------------------
  *
  *  グローバル db.php の Supabase 設定をそのまま使用。
- *  Vercel では FUEL_ENV 未設定で development になるため、ここでも Vercel 時は
- *  Connection Pooler(6543) を使うようにする。
+ *  Vercel 用に SUPABASE_DB_POOLER_HOST を設定すると Pooler（IPv4）で接続します。
  *
  */
 
-$host = getenv('SUPABASE_DB_HOST') ?: 'db.ulizmfrojltqbmucqjfz.supabase.co';
-$port = getenv('SUPABASE_DB_PORT') ?: (getenv('VERCEL') ? '6543' : '5432');
+$default_host = 'db.ulizmfrojltqbmucqjfz.supabase.co';
+$default_ref = 'ulizmfrojltqbmucqjfz';
+$pooler_host  = getenv('SUPABASE_DB_POOLER_HOST');
+
+if ($pooler_host !== false && $pooler_host !== '') {
+    $host = $pooler_host;
+    $port = getenv('SUPABASE_DB_PORT') ?: '6543';
+    $ref  = getenv('SUPABASE_PROJECT_REF') ?: $default_ref;
+    $user = 'postgres.' . $ref; // Pooler はこの形式必須
+} else {
+    $host = getenv('SUPABASE_DB_HOST') ?: $default_host;
+    $port = getenv('SUPABASE_DB_PORT') ?: (getenv('VERCEL') ? '6543' : '5432');
+    $user = getenv('SUPABASE_DB_USER') ?: 'postgres';
+}
 $name = getenv('SUPABASE_DB_NAME') ?: 'postgres';
 
 return array(
     'default' => array(
         'connection' => array(
             'dsn'      => 'pgsql:host='.$host.';port='.$port.';dbname='.$name,
-            'username' => getenv('SUPABASE_DB_USER') ?: 'postgres',
+            'username' => $user,
             'password' => getenv('SUPABASE_DB_PASSWORD') ?: '',
         ),
     ),
