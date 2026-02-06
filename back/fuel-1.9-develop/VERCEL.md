@@ -52,7 +52,24 @@ Laravel の記事と同様に、必要な値を Vercel の「Environment Variabl
 - 元のリクエストパスは、Vercel の PHP ランタイムにより `$_SERVER['REQUEST_URI']` に渡る想定です。  
   もしルーティングが期待どおりでない場合は、`api/index.php` 内の `REQUEST_URI` 補正部分を確認してください。
 
-## 5. 参考リンク
+## 5. トラブルシューティング
+
+### ブラウザや Vue から API を叩くと「404 NOT_FOUND」（Code: NOT_FOUND、ID: hnd1::...）
+
+これは **FuelPHP の 404 ではなく、Vercel の 404** です。  
+＝ サーバーレス関数 `api/index.php` に届く前に、Vercel が「関数が見つからない」と判断しています。
+
+**原因**: リポジトリルート（`demo-ec/`）のままデプロイしており、Vercel がルート直下の `api/index.php` を探しているが、実際のファイルは `back/fuel-1.9-develop/api/index.php` にあるため。
+
+**対処**:
+
+1. Vercel Dashboard → 対象プロジェクト → **Settings** → **General**
+2. **Root Directory** を **Edit** し、`back/fuel-1.9-develop` を指定して **Save**
+3. **Deployments** タブで最新のデプロイの **⋮** → **Redeploy** を実行
+
+Root Directory を設定して再デプロイすると、`api/index.php` が正しく認識され、`/api/login/status` や `/api/product/list` などにアクセスできるようになります。
+
+## 6. 参考リンク
 
 - [Laravel10をVercelに簡単にデプロイ！外部公開までの手順](https://qiita.com/Masanarea_qiita/items/2e1616e4e18f6c8ee26d)
 - [vercel-community/php](https://github.com/vercel-community/php)（Vercel 用 PHP ランタイム）

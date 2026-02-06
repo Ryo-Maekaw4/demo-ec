@@ -19,6 +19,23 @@ ini_set('display_errors', 1);
 
 /**
  * -----------------------------------------------------------------------------
+ *  CORS: クロスオリジン（Vue など別ドメイン）からの API 呼び出しを許可
+ * -----------------------------------------------------------------------------
+ * ブラウザは事前に OPTIONS を送る。OPTIONS に 200 + CORS ヘッダーを返さないと
+ * 本番の POST/GET がブロックされ、Network で失敗・404 に見える。
+ */
+if (php_sapi_name() !== 'cli' && ($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+    $origin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type, Authorization');
+    header('Access-Control-Max-Age: 86400');
+    http_response_code(200);
+    exit;
+}
+
+/**
+ * -----------------------------------------------------------------------------
  *  Vercel 用: リクエスト URI の補正
  * -----------------------------------------------------------------------------
  * 全ルートが /api/index.php?_path=$1 に転送されるため、元のパスを _path から
@@ -128,5 +145,11 @@ if (strpos($response->body(), '{exec_time}') !== false || strpos($response->body
         )
     );
 }
+
+// CORS: クロスオリジン（Vue など）からの API 呼び出しでレスポンスを許可
+$corsOrigin = $_SERVER['HTTP_ORIGIN'] ?? '*';
+$response->set_header('Access-Control-Allow-Origin', $corsOrigin);
+$response->set_header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+$response->set_header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
 $response->send(true);
