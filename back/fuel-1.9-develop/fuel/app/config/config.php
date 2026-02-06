@@ -64,7 +64,8 @@ return array(
 	 * -------------------------------------------------------------------------
 	 */
 
-	// 'cache_dir' => APPPATH.'cache/',
+	// Vercel では読み取り専用のため一時ディレクトリを使用
+	'cache_dir' => getenv('VERCEL') ? (rtrim(sys_get_temp_dir(), '/\\').DIRECTORY_SEPARATOR.'fuel_cache'.DIRECTORY_SEPARATOR) : APPPATH.'cache/',
 
 	/**
 	 * -------------------------------------------------------------------------
@@ -201,6 +202,10 @@ return array(
 	// 'log_threshold'   => Fuel::L_WARNING,
 	// 'log_path'        => APPPATH.'logs/',
 	// 'log_date_format' => 'Y-m-d H:i:s',
+
+	// Vercel など読み取り専用 FS の環境では書き込み可能な一時ディレクトリを使用
+	'log_path'        => getenv('VERCEL') ? (rtrim(sys_get_temp_dir(), '/\\').DIRECTORY_SEPARATOR) : APPPATH.'logs/',
+	'log_threshold'   => getenv('VERCEL') ? Fuel::L_NONE : Fuel::L_WARNING,
 
 	/**
 	 * -------------------------------------------------------------------------
