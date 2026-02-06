@@ -10,7 +10,7 @@ import { useAuth } from '@/composables/useAuth'
 
 // Axiosインスタンスを作成
 const apiClient = axios.create({
-  baseURL: '/fuel-api',
+  baseURL: '/fuel',
   // JWTトークンベースなので、withCredentialsは不要
   headers: {
     'Content-Type': 'application/json',
