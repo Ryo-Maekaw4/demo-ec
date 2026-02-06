@@ -73,10 +73,19 @@ if (php_sapi_name() !== 'cli') {
     }
 
     if ($restoredPath !== null) {
-        $_SERVER['REQUEST_URI'] = $restoredPath;
         $pathOnly = strpos($restoredPath, '?') !== false
             ? substr($restoredPath, 0, strpos($restoredPath, '?'))
             : $restoredPath;
+        $queryPart = strpos($restoredPath, '?') !== false ? substr($restoredPath, strpos($restoredPath, '?')) : '';
+        // Vercel ではドメイン直下がアプリ。ルートは education/topic1 のため、先頭の /fuel を除去する
+        if (strpos($pathOnly, '/fuel') === 0) {
+            $pathOnly = preg_replace('#^/fuel#', '', $pathOnly);
+            if ($pathOnly === '') {
+                $pathOnly = '/';
+            }
+        }
+        $restoredPath = $pathOnly . $queryPart;
+        $_SERVER['REQUEST_URI'] = $restoredPath;
         $_SERVER['PATH_INFO'] = $pathOnly;
     }
 }
