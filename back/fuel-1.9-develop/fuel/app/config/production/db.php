@@ -21,16 +21,27 @@
 
 $default_host = 'db.ulizmfrojltqbmucqjfz.supabase.co';
 $default_ref = 'ulizmfrojltqbmucqjfz';
-$pooler_host  = getenv('SUPABASE_DB_POOLER_HOST');
 
-if ($pooler_host !== false && $pooler_host !== '') {
-    $host = $pooler_host;
-    $port = getenv('SUPABASE_DB_PORT') ?: '6543';
+$parse_host_port = function ($v) {
+    if ($v === '' || strpos($v, '://') === false) {
+        return array($v, null);
+    }
+    $p = parse_url($v);
+    return array(isset($p['host']) ? $p['host'] : $v, isset($p['port']) ? (string) $p['port'] : null);
+};
+
+$pooler_host_raw = getenv('SUPABASE_DB_POOLER_HOST');
+$pooler_host = ($pooler_host_raw !== false && $pooler_host_raw !== '') ? trim($pooler_host_raw) : '';
+
+if ($pooler_host !== '') {
+    list($host, $parsed_port) = $parse_host_port($pooler_host);
+    $port = $parsed_port !== null ? $parsed_port : (getenv('SUPABASE_DB_PORT') ?: '6543');
     $ref  = getenv('SUPABASE_PROJECT_REF') ?: $default_ref;
-    $user = 'postgres.' . $ref; // Pooler はこの形式必須
+    $user = 'postgres.' . $ref;
 } else {
-    $host = getenv('SUPABASE_DB_HOST') ?: $default_host;
-    $port = getenv('SUPABASE_DB_PORT') ?: '6543';
+    $host_raw = getenv('SUPABASE_DB_HOST') ?: $default_host;
+    list($host, $parsed_port) = $parse_host_port($host_raw);
+    $port = $parsed_port !== null ? $parsed_port : (getenv('SUPABASE_DB_PORT') ?: '6543');
     $user = getenv('SUPABASE_DB_USER') ?: 'postgres';
 }
 $name = getenv('SUPABASE_DB_NAME') ?: 'postgres';
